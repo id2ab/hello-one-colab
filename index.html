@@ -405,11 +405,12 @@
 
         // filter by name या mobile
         const visible = currentCustomers.filter(c => {
-            if (!text) return true;
-            const name = (c.name || "").toLowerCase();
-            const mob = (c.mobile || "").toLowerCase();
-            return name.includes(text) || mob.includes(text);
-        });
+    if (!text) return true;
+    const name = (c.name || "").toLowerCase();
+    const mob = String(c.mobile || "").toLowerCase();   // 👈 यहाँ change
+    return name.includes(text) || mob.includes(text);
+});
+
 
         if (!visible.length) {
             customerListEl.innerHTML = '<div class="customer-item empty">search से कोई ग्राहक नहीं मिला।</div>';
@@ -564,6 +565,7 @@
 
 </body>
 </html>
+
 
 
 
