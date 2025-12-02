@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello One | Profile Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f5f5f7;
+        }
+
+        .card {
+            background: #fff;
+            padding: 15px;
+            border-radius: 14px;
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: center;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+
+        .photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 14px;
+            object-fit: cover;
+            border: 2px solid #ddd;
+        }
+
+        .name {
+            margin-top: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .loc {
+            font-size: 0.85rem;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .btn-row {
+            margin: 10px 0;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 12px;
+            margin: 4px;
+            border-radius: 8px;
+            text-decoration: none;
+            background: #008000;
+            color: #fff;
+            font-size: 0.85rem;
+        }
+
+        .field {
+            text-align: left;
+            margin: 4px 0;
+            font-size: 0.9rem;
+        }
+
+        .lbl {
+            font-weight: 600;
+        }
+
+        /* ==== Print Styling (A4 Table Style) ==== */
+        @media print {
+            body {
+                background: #fff;
+                padding: 0;
+            }
+            .card {
+                box-shadow: none;
+                width: 100%;
+                border: 1px solid #000;
+                border-radius: 0;
+                text-align: left;
+            }
+            .photo {
+                border-radius: 4px;
+                border: 1px solid #000;
+                margin-bottom: 12px;
+            }
+            .field {
+                margin: 6px 0;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h3 style="text-align:center;">Profile View (Test Version)</h3>
+
+<div id="profileBox">Loading...</div>
+
+<script>
+const GSHEET_URL =
+ "https://docs.google.com/spreadsheets/d/1mgTsL3FgpqnqKs_D3d349xJYsJP58r3WxtMqzeUCLbE/gviz/tq?tqx=out:json&gid=0";
+
+let all = [];
+let firstCustomer = null;
+
+function parseRow(row) {
+    const v = i => row.c[i] ? row.c[i].v : "";
+    return {
+        area: v(0),
+        ward: v(1),
+        id: v(2),
+        name: v(3),
+        mobile: v(4),
+        whatsapp: v(5),
+        edu: v(6),
+        caste: v(7),
+        photo: v(8),
+        village: v(9)
+    };
+}
+
+fetch(GSHEET_URL)
+.then(r => r.text())
+.then(text => {
+    const s = text.indexOf("{"), e = text.lastIndexOf("}");
+    const json = JSON.parse(text.slice(s, e+1));
+    const rows = json.table.rows;
+    all = rows.map(parseRow).filter(r => r.name);
+
+    firstCustomer = all[0];
+    show(firstCustomer);
+})
+.catch(err => {
+    document.getElementById("profileBox").innerHTML = "Error loading data!";
+    console.error(err);
+});
+
+function show(c) {
+    const wa = c.whatsapp || c.mobile;
+    const waLink = wa ? `https://wa.me/91${wa}` : "#";
+
+    document.getElementById("profileBox").innerHTML = `
+        <div class="card">
+            <img class="photo" src="${c.photo || 'https://via.placeholder.com/100'}">
+
+            <div class="name">${c.name}</div>
+            <div class="loc">${c.area} • ${c.ward}</div>
+
+            <div class="btn-row">
+                ${wa ? `<a class="btn" href="${waLink}" target="_blank">WhatsApp</a>` : ""}
+                ${c.mobile ? `<a class="btn" href="tel:${c.mobile}" style="background:#0077cc;">Call</a>` : ""}
+            </div>
+
+            <div class="field"><span class="lbl">Mobile:</span> ${c.mobile}</div>
+            <div class="field"><span class="lbl">Education:</span> ${c.edu}</div>
+            <div class="field"><span class="lbl">Caste:</span> ${c.caste}</div>
+            <div class="field"><span class="lbl">Village:</span> ${c.village}</div>
+            <div class="field"><span class="lbl">Customer ID:</span> ${c.id}</div>
+        </div>
+    `;
+}
+</script>
+
+</body>
+</html>
