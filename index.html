@@ -418,59 +418,25 @@
         return;
     }
 
+    console.log("renderProfile:", customer);  // debug के लिए
+
     profileAreaEl.className = "";
     const locationText = [areaType, wardName, customer.extraVillage]
         .filter(Boolean).join(" • ");
 
-    const waNumber = (customer.whatsapp || customer.mobile || "").replace(/\D/g, "");
-    const waLink = waNumber
-        ? `https://wa.me/91${waNumber}?text=Namaste%2C%20Resh%20Cyber%20Net%20se%20baat%20ho%20rahi%20hai.`
-        : null;
-
     profileAreaEl.innerHTML = `
-        <div class="profile">
-            <div class="profile-photo-wrapper">
-                <img class="profile-photo"
-                     src="${customer.photo || 'https://via.placeholder.com/150x150?text=Photo'}"
-                     alt="${customer.name}">
+        <div style="font-family: system-ui; line-height:1.4;">
+            <div style="font-weight:600; font-size:1rem;">${customer.name || ""}</div>
+            <div style="font-size:0.9rem; color:#6b7280; margin-bottom:6px;">
+                ${locationText}
             </div>
-            <div class="profile-main">
-                <div class="profile-name">${customer.name || ""}</div>
-                <div class="profile-meta">${locationText}</div>
 
-                <div>
-                    <span class="chip">${customer.education || "Education N/A"}</span>
-                    <span class="chip">Caste: ${customer.caste || "N/A"}</span>
-                </div>
+            <div><span class="label">Mobile:</span> ${customer.mobile || "N/A"}</div>
+            <div><span class="label">Education:</span> ${customer.education || "N/A"}</div>
+            <div><span class="label">Caste:</span> ${customer.caste || "N/A"}</div>
 
-                <div class="profile-rows">
-                    <div class="profile-row">
-                        <span class="label">Mobile:</span>
-                        ${customer.mobile
-                            ? `<a class="link" href="tel:${customer.mobile}">${customer.mobile}</a>`
-                            : "N/A"}
-                    </div>
-                    <div class="profile-row">
-                        <span class="label">WhatsApp:</span>
-                        ${
-                            waLink
-                                ? `<a class="link" href="${waLink}" target="_blank">Chat on WhatsApp</a>`
-                                : "N/A"
-                        }
-                    </div>
-                    <div class="profile-row">
-                        <span class="label">Education:</span>
-                        ${customer.education || "N/A"}
-                    </div>
-                    <div class="profile-row">
-                        <span class="label">Caste:</span>
-                        ${customer.caste || "N/A"}
-                    </div>
-                    <div class="profile-row">
-                        <span class="label">Customer ID:</span>
-                        ${customer.id || "N/A"}
-                    </div>
-                </div>
+            <div style="margin-top:6px; font-size:0.8rem; color:#9ca3af;">
+                (CustomerID: ${customer.id || "N/A"})
             </div>
         </div>
     `;
@@ -513,5 +479,6 @@
 
 </body>
 </html>
+
 
 
