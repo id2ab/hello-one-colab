@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello One | CoLab</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            background: #f3f4f6;
+            color: #111827;
+        }
+        header {
+            background: linear-gradient(135deg, #111827, #1f2937);
+            color: #f9fafb;
+            padding: 16px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .brand {
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+        .tagline {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        .powered {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 20px auto;
+            padding: 0 15px 30px;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 18px 20px;
+            box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+            margin-bottom: 18px;
+        }
+
+        h2 {
+            margin: 0 0 8px;
+            font-size: 1.2rem;
+        }
+        p.small {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+            color: #4b5563;
+        }
+        select {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            font-size: 0.9rem;
+            outline: none;
+        }
+        select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.4);
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.5fr);
+            gap: 16px;
+            margin-top: 16px;
+        }
+        @media (max-width: 800px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Customer list */
+        .customer-list {
+            max-height: 360px;
+            overflow-y: auto;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+        }
+        .customer-item {
+            padding: 8px 10px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .customer-item:nth-child(odd) {
+            background: #f9fafb;
+        }
+        .customer-item:hover {
+            background: #dbeafe;
+        }
+        .customer-item.active {
+            background: #1d4ed8;
+            color: #eff6ff;
+        }
+        .initial-circle {
+            width: 26px;
+            height: 26px;
+            border-radius: 999px;
+            background: #e5e7eb;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Detail card */
+        .profile {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+        .profile-photo-wrapper {
+            flex-shrink: 0;
+        }
+        .profile-photo {
+            width: 110px;
+            height: 110px;
+            border-radius: 16px;
+            object-fit: cover;
+            border: 1px solid #e5e7eb;
+            background: #f3f4f6;
+        }
+        .profile-main {
+            flex: 1;
+        }
+        .profile-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        .profile-meta {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            background: #eff6ff;
+            color: #1d4ed8;
+            margin-right: 4px;
+            margin-bottom: 4px;
+        }
+        .profile-rows {
+            margin-top: 8px;
+            font-size: 0.9rem;
+        }
+        .profile-row {
+            margin-bottom: 4px;
+        }
+        .label {
+            font-weight: 500;
+            color: #4b5563;
+        }
+        a.link {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        a.link:hover {
+            text-decoration: underline;
+        }
+
+        .empty {
+            font-size: 0.9rem;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div>
+        <div class="brand">Hello One</div>
+        <div class="tagline">CoLab</div>
+        <div class="powered">Powered by Resh Cyber Net</div>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- Filters / Dropdowns -->
+    <div class="card">
+        <h2>लोकेशन और ग्राहक चयन</h2>
+        <p class="small">पहले क्षेत्र चुनें → फिर वार्ड / गाँव → फिर ग्राहक का नाम चुनें।</p>
+
+        <div class="filters">
+            <div>
+                <label for="areaType">क्षेत्र का प्रकार</label>
+                <select id="areaType" disabled>
+                    <option value="">डेटा लोड हो रहा है…</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="wardSelect">वार्ड / गाँव</label>
+                <select id="wardSelect" disabled>
+                    <option value="">पहले क्षेत्र चुनें</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="customerSelect">ग्राहक का नाम</label>
+                <select id="customerSelect" disabled>
+                    <option value="">पहले वार्ड / गाँव चुनें</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="layout">
+
+        <!-- Customer list panel -->
+        <div class="card">
+            <h2>ग्राहक सूची</h2>
+            <p class="small">चयनित वार्ड / गाँव के सभी ग्राहक (A–Z)</p>
+            <div id="customerList" class="customer-list">
+                <div class="customer-item empty">
+                    Google Sheet से डेटा लोड हो रहा है…
+                </div>
+            </div>
+        </div>
+
+        <!-- Details panel -->
+        <div class="card">
+            <h2>ग्राहक प्रोफाइल विवरण</h2>
+            <p class="small">ग्राहक का नाम चुनते ही यहाँ उसका प्रोफाइल दिखेगा।</p>
+            <div id="profileArea" class="empty" style="margin-top:10px;">
+                कृपया पहले डेटा लोड होने दें।
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==== Google Sheet Config ====
+const SHEET_ID = "1mgTsL3FgpqnqKs_D3d349xJYsJP58r3WxtMqzeUCLbE";
+const SHEET_NAME = "SDYTO";
+
+const GSHEET_URL =
+    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
+
+
+    let allCustomers = [];
+
+    const areaTypeEl = document.getElementById("areaType");
+    const wardSelectEl = document.getElementById("wardSelect");
+    const customerSelectEl = document.getElementById("customerSelect");
+    const customerListEl = document.getElementById("customerList");
+    const profileAreaEl = document.getElementById("profileArea");
+
+    function clearSelect(select, placeholderText) {
+        select.innerHTML = "";
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = placeholderText;
+        select.appendChild(opt);
+    }
+
+    function uniqueSorted(arr) {
+        return Array.from(new Set(arr.filter(x => x))).sort((a, b) => a.localeCompare(b));
+    }
+
+    function showError(msg, extra) {
+        customerListEl.innerHTML = `<div class="customer-item empty">${msg}</div>`;
+        profileAreaEl.className = "empty";
+        profileAreaEl.textContent = extra || "डेटा लोड करने में समस्या आई।";
+        console.error("Hello One Error:", msg, extra || "");
+    }
+
+    function rowToCustomer(row) {
+        const get = i => (row.c[i] && row.c[i].v) ? row.c[i].v : "";
+        return {
+            areaType: get(0),
+            ward: get(1),
+            id: get(2),
+            name: get(3),
+            mobile: get(4),
+            whatsapp: get(5),
+            education: get(6),
+            caste: get(7),
+            photo: get(8),
+            extraVillage: get(9)
+        };
+    }
+
+    function loadSheetData() {
+        fetch(GSHEET_URL)
+            .then(res => res.text())
+            .then(text => {
+                // अगर Sheet private होगी या SheetName गलत होगा,
+                // तो response JSON नहीं बल्कि error HTML होगा।
+                const firstBrace = text.indexOf("{");
+                const lastBrace = text.lastIndexOf("}");
+
+                if (firstBrace === -1 || lastBrace === -1) {
+                    showError(
+                        "Google Sheet response JSON format में नहीं है।",
+                        "→ Share setting या Sheet Name (tab name) check करें।"
+                    );
+                    console.log("Raw response:", text);
+                    return;
+                }
+
+                const jsonString = text.substring(firstBrace, lastBrace + 1);
+                let json;
+                try {
+                    json = JSON.parse(jsonString);
+                } catch (e) {
+                    showError("JSON parse नहीं हो सका।", "→ SHEET_ID / SHEET_NAME फिर से चेक करें।");
+                    console.error(e);
+                    console.log("jsonString:", jsonString);
+                    return;
+                }
+
+                const rows = (json.table && json.table.rows) ? json.table.rows : [];
+                allCustomers = rows
+                    .map(rowToCustomer)
+                    .filter(c => c.areaType && c.name);
+
+                if (!allCustomers.length) {
+                    showError(
+                        "Sheet में कोई वैध ग्राहक डेटा नहीं मिला।",
+                        "→ क्या आपने header row (AreaType, WardVillage, Name, आदि) और नीचे rows भरी हैं?"
+                    );
+                    areaTypeEl.disabled = true;
+                    return;
+                }
+
+                initAreaOptions();
+                customerListEl.innerHTML = '<div class="customer-item empty">कृपया क्षेत्र चुनें।</div>';
+                profileAreaEl.className = "empty";
+                profileAreaEl.textContent = "कृपया पहले क्षेत्र और वार्ड / गाँव चुनें।";
+            })
+            .catch(err => {
+                showError("Google Sheet से डेटा लोड नहीं हो सका।", err.message);
+            });
+    }
+
+    function initAreaOptions() {
+        clearSelect(areaTypeEl, "क्षेत्र चुनें (Nagar / Gramin)");
+        const areas = uniqueSorted(allCustomers.map(c => c.areaType));
+
+        areas.forEach(area => {
+            const opt = document.createElement("option");
+            opt.value = area;
+            opt.textContent = area;
+            areaTypeEl.appendChild(opt);
+        });
+
+        areaTypeEl.disabled = false;
+    }
+
+    function populateWardOptions(areaType) {
+        clearSelect(wardSelectEl, "वार्ड / गाँव चुनें");
+        clearSelect(customerSelectEl, "पहले वार्ड / गाँव चुनें");
+        wardSelectEl.disabled = true;
+        customerSelectEl.disabled = true;
+
+        customerListEl.innerHTML = '<div class="customer-item empty">अभी तक कोई वार्ड / गाँव चयनित नहीं है।</div>';
+        profileAreaEl.className = "empty";
+        profileAreaEl.textContent = "कृपया पहले वार्ड / गाँव चुनें।";
+
+        if (!areaType) return;
+
+        const wards = uniqueSorted(
+            allCustomers
+                .filter(c => c.areaType === areaType)
+                .map(c => c.ward)
+        );
+
+        wards.forEach(w => {
+            const opt = document.createElement("option");
+            opt.value = w;
+            opt.textContent = w;
+            wardSelectEl.appendChild(opt);
+        });
+
+        wardSelectEl.disabled = false;
+    }
+
+    function populateCustomerOptions(areaType, wardName) {
+        clearSelect(customerSelectEl, "ग्राहक चुनें");
+        customerSelectEl.disabled = true;
+        customerListEl.innerHTML = "";
+
+        if (!areaType || !wardName) {
+            customerListEl.innerHTML = '<div class="customer-item empty">अभी तक कोई वार्ड / गाँव चयनित नहीं है।</div>';
+            return;
+        }
+
+        const customers = allCustomers
+            .filter(c => c.areaType === areaType && c.ward === wardName)
+            .sort((a, b) => a.name.localeCompare(b.name));
+
+        if (!customers.length) {
+            customerListEl.innerHTML = '<div class="customer-item empty">इस वार्ड / गाँव में कोई ग्राहक दर्ज नहीं है।</div>';
+            return;
+        }
+
+        customers.forEach(c => {
+            const opt = document.createElement("option");
+            opt.value = c.id;
+            opt.textContent = c.name;
+            customerSelectEl.appendChild(opt);
+
+            const item = document.createElement("div");
+            item.className = "customer-item";
+            item.dataset.id = c.id;
+
+            const initials = (c.name || "?")
+                .split(" ")
+                .map(p => p[0])
+                .join("")
+                .slice(0, 2)
+                .toUpperCase();
+
+            const circle = document.createElement("div");
+            circle.className = "initial-circle";
+            circle.textContent = initials;
+
+            const nameSpan = document.createElement("div");
+            nameSpan.textContent = c.name;
+
+            item.appendChild(circle);
+            item.appendChild(nameSpan);
+
+            item.addEventListener("click", () => {
+                customerSelectEl.value = c.id;
+                renderProfile(c, areaType, wardName);
+                document.querySelectorAll(".customer-item").forEach(el => {
+                    el.classList.remove("active");
+                });
+                item.classList.add("active");
+            });
+
+            customerListEl.appendChild(item);
+        });
+
+        customerSelectEl.disabled = false;
+    }
+
+    function renderProfile(customer, areaType, wardName) {
+        if (!customer) {
+            profileAreaEl.className = "empty";
+            profileAreaEl.textContent = "डेटा उपलब्ध नहीं है।";
+            return;
+        }
+
+        profileAreaEl.className = "";
+        const waNumber = (customer.whatsapp || customer.mobile || "").replace(/\D/g, "");
+        const waLink = waNumber
+            ? `https://wa.me/91${waNumber}?text=Namaste%2C%20Resh%20Cyber%20Net%20se%20baat%20ho%20rahi%20hai.`
+            : null;
+
+        const locationText = [areaType, wardName, customer.extraVillage]
+            .filter(Boolean).join(" • ");
+
+        profileAreaEl.innerHTML = `
+            <div class="profile">
+                <div class="profile-photo-wrapper">
+                    <img class="profile-photo"
+                         src="${customer.photo || 'https://via.placeholder.com/150x150?text=Photo'}"
+                         alt="${customer.name}">
+                </div>
+                <div class="profile-main">
+                    <div class="profile-name">${customer.name || ""}</div>
+                    <div class="profile-meta">${locationText}</div>
+                    <div>
+                        <span class="chip">${customer.education || "Education N/A"}</span>
+                        <span class="chip">Caste: ${customer.caste || "N/A"}</span>
+                    </div>
+                    <div class="profile-rows">
+                        <div class="profile-row">
+                            <span class="label">Mobile:</span>
+                            ${customer.mobile
+                                ? `<a class="link" href="tel:${customer.mobile}">${customer.mobile}</a>`
+                                : "N/A"}
+                        </div>
+                        <div class="profile-row">
+                            <span class="label">WhatsApp:</span>
+                            ${
+                                waLink
+                                    ? `<a class="link" href="${waLink}" target="_blank">Chat on WhatsApp</a>`
+                                    : "N/A"
+                            }
+                        </div>
+                        <div class="profile-row">
+                            <span class="label">Education:</span>
+                            ${customer.education || "N/A"}
+                        </div>
+                        <div class="profile-row">
+                            <span class="label">Caste:</span>
+                            ${customer.caste || "N/A"}
+                        </div>
+                        <div class="profile-row">
+                            <span class="label">Customer ID:</span>
+                            ${customer.id || "N/A"}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    areaTypeEl.addEventListener("change", () => {
+        const areaType = areaTypeEl.value;
+        populateWardOptions(areaType);
+    });
+
+    wardSelectEl.addEventListener("change", () => {
+        const areaType = areaTypeEl.value;
+        const wardName = wardSelectEl.value;
+        populateCustomerOptions(areaType, wardName);
+        profileAreaEl.className = "empty";
+        profileAreaEl.textContent = "कृपया ग्राहक का नाम चुनें।";
+    });
+
+    customerSelectEl.addEventListener("change", () => {
+        const areaType = areaTypeEl.value;
+        const wardName = wardSelectEl.value;
+        const customerId = customerSelectEl.value;
+        if (!customerId) return;
+
+        const customer = allCustomers.find(
+            c => c.areaType === areaType && c.ward === wardName && c.id === customerId
+        );
+        renderProfile(customer, areaType, wardName);
+
+        document.querySelectorAll(".customer-item").forEach(el => {
+            el.classList.toggle("active", el.dataset.id === customerId);
+        });
+    });
+
+    // Start
+    loadSheetData();
+</script>
+
+</body>
+</html>
