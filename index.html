@@ -230,6 +230,17 @@
         "https://docs.google.com/spreadsheets/d/1mgTsL3FgpqnqKs_D3d349xJYsJP58r3WxtMqzeUCLbE/gviz/tq?tqx=out:json&gid=0";
 
     let allCustomers = [];
+    let currentCustomers = [];   // चुने हुए ward के customers
+
+    const searchBoxEl = document.getElementById("searchBox");
+       areaTypeEl.addEventListener("change", ...);
+       wardSelectEl.addEventListener("change", ...);
+       customerSelectEl.addEventListener("change", ...);
+    searchBoxEl.addEventListener("input", () => {
+    const text = searchBoxEl.value;
+    renderCustomerList(text);
+});
+
 
     const areaTypeEl = document.getElementById("areaType");
     const wardSelectEl = document.getElementById("wardSelect");
@@ -354,70 +365,105 @@
 
     // ==== Customer list + dropdown ====
     function populateCustomerOptions(areaType, wardName) {
-        clearSelect(customerSelectEl, "ग्राहक चुनें");
-        customerSelectEl.disabled = true;
-        customerListEl.innerHTML = "";
+    clearSelect(customerSelectEl, "ग्राहक चुनें");
+    customerSelectEl.disabled = true;
+    customerListEl.innerHTML = "";
 
-        if (!areaType || !wardName) {
-            customerListEl.innerHTML = '<div class="customer-item empty">अभी तक कोई वार्ड / गाँव चयनित नहीं है।</div>';
-            return;
-        }
+    currentCustomers = [];  // reset
 
-        const customers = allCustomers
-            .filter(c => c.areaType === areaType && c.ward === wardName)
-            .sort((a, b) => a.name.localeCompare(b.name));
+    if (!areaType || !wardName) {
+        customerListEl.innerHTML = '<div class="customer-item empty">अभी तक कोई वार्ड / गाँव चयनित नहीं है।</div>';
+        return;
+    }
 
-        if (!customers.length) {
-            customerListEl.innerHTML = '<div class="customer-item empty">इस वार्ड / गाँव में कोई ग्राहक दर्ज नहीं है।</div>';
-            return;
-        }
+    const customers = allCustomers
+        .filter(c => c.areaType === areaType && c.ward === wardName)
+        .sort((a, b) => a.name.localeCompare(b.name));
 
-        customers.forEach((c, index) => {
-            // dropdown option
-            const opt = document.createElement("option");
-            opt.value = c.id;
-            opt.textContent = c.name;
-            customerSelectEl.appendChild(opt);
+    if (!customers.length) {
+        customerListEl.innerHTML = '<div class="customer-item empty">इस वार्ड / गाँव में कोई ग्राहक दर्ज नहीं है।</div>';
+        return;
+    }
 
-            // left side list item
-            const item = document.createElement("div");
-            item.className = "customer-item";
-            item.dataset.id = c.id;
+    // 👉 store selected ward ke sab customers
+    currentCustomers = customers;
 
-            const initials = (c.name || "?")
-                .split(" ").map(p => p[0]).join("").slice(0, 2).toUpperCase();
+    // dropdown options बनाओ
+    customers.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c.id;
+        opt.textContent = c.name;
+        customerSelectEl.appendChild(opt);
+    });
 
-            const circle = document.createElement("div");
-            circle.className = "initial-circle";
-            circle.textContent = initials;
+    customerSelectEl.disabled = false;
 
-            const nameSpan = document.createElement("div");
-            nameSpan.textContent = c.name;
+    // default – पहली बार पूरा list render करें
+    renderCustomerList("");
+}
 
-            item.appendChild(circle);
-            item.appendChild(nameSpan);
+    function renderCustomerList(filterText) {
+    const areaType = areaTypeEl.value;
+    const wardName = wardSelectEl.value;
+    const selectedId = customerSelectEl.value;
 
-            item.addEventListener("click", () => {
-                customerSelectEl.value = c.id;
-                renderProfile(c, areaType, wardName);
-                document.querySelectorAll(".customer-item").forEach(el => {
-                    el.classList.remove("active");
-                });
-                item.classList.add("active");
+    customerListEl.innerHTML = "";
+
+    const text = (filterText || "").toLowerCase();
+
+    // filter by name या mobile
+    const visible = currentCustomers.filter(c => {
+        if (!text) return true;
+        const name = (c.name || "").toLowerCase();
+        const mob = (c.mobile || "").toLowerCase();
+        return name.includes(text) || mob.includes(text);
+    });
+
+    if (!visible.length) {
+        customerListEl.innerHTML = '<div class="customer-item empty">search से कोई ग्राहक नहीं मिला।</div>';
+        profileAreaEl.className = "empty";
+        profileAreaEl.textContent = "कोई matching ग्राहक नहीं।";
+        return;
+    }
+
+    visible.forEach((c, index) => {
+        const item = document.createElement("div");
+        item.className = "customer-item";
+        item.dataset.id = c.id;
+
+        const initials = (c.name || "?")
+            .split(" ").map(p => p[0]).join("").slice(0, 2).toUpperCase();
+
+        const circle = document.createElement("div");
+        circle.className = "initial-circle";
+        circle.textContent = initials;
+
+        const nameSpan = document.createElement("div");
+        nameSpan.textContent = c.name + (c.mobile ? " (" + c.mobile + ")" : "");
+
+        item.appendChild(circle);
+        item.appendChild(nameSpan);
+
+        item.addEventListener("click", () => {
+            customerSelectEl.value = c.id;
+            renderProfile(c, areaType, wardName);
+            document.querySelectorAll(".customer-item").forEach(el => {
+                el.classList.remove("active");
             });
-
-            customerListEl.appendChild(item);
-
-            // pehla customer auto-select + profile
-            if (index === 0) {
-                customerSelectEl.value = c.id;
-                renderProfile(c, areaType, wardName);
-                item.classList.add("active");
-            }
+            item.classList.add("active");
         });
 
-        customerSelectEl.disabled = false;
-    }
+        customerListEl.appendChild(item);
+
+        // अगर dropdown खाली है या search के बाद कुछ नहीं चुना गया हो = पहला auto select
+        if ((!selectedId && index === 0) || c.id === selectedId) {
+            customerSelectEl.value = c.id;
+            renderProfile(c, areaType, wardName);
+            item.classList.add("active");
+        }
+    });
+}
+
 
     // ==== Simple, stable profile ====
    function renderProfile(c, areaType, wardName) {
@@ -518,6 +564,7 @@
 
 </body>
 </html>
+
 
 
 
