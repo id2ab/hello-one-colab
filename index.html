@@ -195,14 +195,24 @@
 
     <div class="layout">
         <div class="card">
-            <h2>ग्राहक सूची</h2>
-            <p class="small">चयनित वार्ड / गाँव के सभी ग्राहक (A–Z)</p>
-            <div id="customerList" class="customer-list">
-                <div class="customer-item empty">
-                    Google Sheet से डेटा लोड हो रहा है…
-                </div>
-            </div>
+    <h2>ग्राहक सूची</h2>
+    <p class="small">चयनित वार्ड / गाँव के सभी ग्राहक (A–Z)</p>
+
+    <!-- 🔍 Search box -->
+    <div style="margin:8px 0 10px;">
+        <input id="searchBox"
+               type="text"
+               placeholder="नाम या मोबाइल से खोजें..."
+               style="width:100%;padding:6px 8px;border-radius:8px;border:1px solid #d1d5db;font-size:0.9rem;">
+    </div>
+
+    <div id="customerList" class="customer-list">
+        <div class="customer-item empty">
+            अभी तक कोई वार्ड / गाँव चयनित नहीं है।
         </div>
+    </div>
+</div>
+
 
         <div class="card">
             <h2>ग्राहक प्रोफाइल विवरण</h2>
@@ -508,6 +518,7 @@
 
 </body>
 </html>
+
 
 
 
