@@ -454,23 +454,12 @@
                 ${c.mobile ? `<a href="tel:${c.mobile}" 
                         style="padding:8px 12px;background:#0077cc;color:#fff;text-decoration:none;border-radius:8px;">
                         Call</a>` : ""}
-            </div>
-            <div style="margin:10px 0;">
-    ${wa ? `<a href="${waLink}" target="_blank" 
-            style="padding:8px 12px;background:green;color:#fff;text-decoration:none;border-radius:8px;margin-right:5px;">
-            WhatsApp</a>` : ""}
-
-    ${c.mobile ? `<a href="tel:${c.mobile}" 
-            style="padding:8px 12px;background:#0077cc;color:#fff;text-decoration:none;border-radius:8px;margin-right:5px;">
-            Call</a>` : ""}
-
-    <a href="#" onclick="window.print();return false;"
+                <a href="#" onclick="window.print();return false;"
        style="padding:8px 12px;background:#6b7280;color:#fff;text-decoration:none;border-radius:8px;">
        Print
-    </a>
-</div>
-
-
+            </a>
+            </div>
+            
             <div style="text-align:left;margin-top:10px;font-size:0.9rem;">
                 <div><b>Mobile:</b> ${c.mobile}</div>
                 <div><b>Education:</b> ${c.education}</div>
@@ -519,6 +508,7 @@
 
 </body>
 </html>
+
 
 
 
