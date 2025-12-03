@@ -157,27 +157,36 @@
             payload[key] = value.trim();
         });
 
-        try {
-            const res = await fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            });
+       try {
+    const res = await fetch(API_URL, {
+        method: "POST",
+        // headers हटा दिए, ताकि preflight न हो
+        body: JSON.stringify(payload)
+    });
 
-            const data = await res.json();
-            if (data.status === "success") {
-                statusEl.textContent = "✅ Saved! Customer ID: " + (data.customerId || "");
-                statusEl.className = "status ok";
-                form.reset();
-            } else {
-                statusEl.textContent = "❌ Error: " + (data.message || "Unknown error");
-                statusEl.className = "status err";
-            }
-        } catch (err) {
-            console.error(err);
-            statusEl.textContent = "❌ Network error: " + err.message;
-            statusEl.className = "status err";
-        }
+    // response को पहले text लो, फिर JSON try करो
+    const text = await res.text();
+    let data;
+    try {
+        data = JSON.parse(text);
+    } catch {
+        data = { status: "ok", message: text };
+    }
+
+    if (res.ok && (data.status === "success" || data.status === "ok")) {
+        statusEl.textContent = "✅ Saved! Customer ID: " + (data.customerId || "");
+        statusEl.className = "status ok";
+        form.reset();
+    } else {
+        statusEl.textContent = "❌ Error: " + (data.message || "Unknown error");
+        statusEl.className = "status err";
+    }
+} catch (err) {
+    console.error(err);
+    statusEl.textContent = "❌ Network error: " + err.message;
+    statusEl.className = "status err";
+}
+
     });
 </script>
 
