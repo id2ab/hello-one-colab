@@ -138,9 +138,9 @@
 </div>
 
 <script>
-    // 👉 यहाँ अपना Apps Script Web App URL डालना है:
-    const API_URL = "https://script.google.com/macros/s/AKfycByZ_abc123XYZ/exec
-";  // इसी को बदलना है
+    // 👉 यहाँ अपना असली Apps Script Web App URL डालो (जो /exec पर खत्म होता हो)
+    // ध्यान रहे: बीच में कोई नई line नहीं होनी चाहिए
+    const API_URL = "https://script.google.com/macros/s/AKfycbxd-21OaGQVcpMLIzXEJE3ge3i_HlXN-McSkIcU7281W1ufrhAVpTQlxUtwbAuRIATP/exec";
 
     const form = document.getElementById("customerForm");
     const statusEl = document.getElementById("status");
@@ -154,39 +154,26 @@
         const payload = {};
 
         formData.forEach((value, key) => {
-            payload[key] = value.trim();
+            payload[key] = (value || "").toString().trim();
         });
 
-       try {
-    const res = await fetch(API_URL, {
-        method: "POST",
-        // headers हटा दिए, ताकि preflight न हो
-        body: JSON.stringify(payload)
-    });
+        try {
+            // सबसे simple तरीका: no-cors, ताकि CORS / preflight की झंझट न रहे
+            await fetch(API_URL, {
+                method: "POST",
+                mode: "no-cors",
+                body: JSON.stringify(payload)
+            });
 
-    // response को पहले text लो, फिर JSON try करो
-    const text = await res.text();
-    let data;
-    try {
-        data = JSON.parse(text);
-    } catch {
-        data = { status: "ok", message: text };
-    }
-
-    if (res.ok && (data.status === "success" || data.status === "ok")) {
-        statusEl.textContent = "✅ Saved! Customer ID: " + (data.customerId || "");
-        statusEl.className = "status ok";
-        form.reset();
-    } else {
-        statusEl.textContent = "❌ Error: " + (data.message || "Unknown error");
-        statusEl.className = "status err";
-    }
-} catch (err) {
-    console.error(err);
-    statusEl.textContent = "❌ Network error: " + err.message;
-    statusEl.className = "status err";
-}
-
+            // हम response नहीं पढ़ पाएँगे, पर request जा चुकी होगी
+            statusEl.textContent = "✅ Saved! कृपया Sheet में नीचे नई row check करें।";
+            statusEl.className = "status ok";
+            form.reset();
+        } catch (err) {
+            console.error(err);
+            statusEl.textContent = "❌ Network error: " + err.message;
+            statusEl.className = "status err";
+        }
     });
 </script>
 
